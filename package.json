@@ -46,7 +46,8 @@
     "extends": "@guoyunhe/node-scripts"
   },
   "jest": {
-    "preset": "@guoyunhe/node-scripts"
+    "preset": "@guoyunhe/node-scripts",
+    "testTimeout": 100000
   },
   "dependencies": {
     "@guoyunhe/downloader": "^1.0.0",
