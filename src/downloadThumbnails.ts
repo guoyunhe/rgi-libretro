@@ -1,5 +1,6 @@
 import { download } from '@guoyunhe/downloader';
 import axios from 'axios';
+import { symlink } from 'fs/promises';
 import { join } from 'path';
 
 const typesDict = {
@@ -7,6 +8,10 @@ const typesDict = {
   snap: 'Named_Snaps',
   title: 'Named_Titles',
 };
+
+function normalize(file: string) {
+  return file.replaceAll('&', '_');
+}
 
 export interface Options {
   apiUrl?: string;
@@ -30,7 +35,11 @@ export async function downloadThumbnails(platform: string, { apiUrl = 'https://r
       for (let k = 0; k < 3; k++) {
         const [type, folder] = Object.entries(typesDict)[k];
         const image = game.images.find((img: any) => img.type === type);
-        await download(image.url, join(folder, game.name + '.png'));
+        await download(image.url, join(folder, normalize(game.name) + '.png'));
+        for (let s = 0; s < game.subs.length; s++) {
+          const sub = game.subs[s];
+          await symlink('./' + normalize(game.name) + '.png', join(folder, normalize(sub.name) + '.png'));
+        }
       }
     }
 
