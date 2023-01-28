@@ -25,9 +25,7 @@ export async function downloadThumbnails(platform: string, { apiUrl = 'https://r
         page: i,
         perPage: 50,
         platform,
-      },
-      headers: {},
-      withCredentials: true,
+      }
     });
 
     const games = res.data.data;
