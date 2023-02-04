@@ -1,6 +1,8 @@
 import { download } from '@guoyunhe/downloader';
 import axios from 'axios';
-import { rm, symlink } from 'fs/promises';
+import { createHash } from 'crypto';
+import { existsSync } from 'fs';
+import { readFile, rm, symlink } from 'fs/promises';
 import { join } from 'path';
 
 const typesDict = {
@@ -39,8 +41,16 @@ export async function downloadThumbnails(platform: string, { apiUrl = 'https://r
         const [type, folder] = Object.entries(typesDict)[k];
         const image = game.images.find((img: any) => img.type === type);
         if (image) {
-          console.log(image);
-          await download(image.url, join(folder, normalize(game.name) + '.png'));
+          const imagePath = join(folder, normalize(game.name) + '.png');
+          if (existsSync(imagePath)) {
+            const buffer = await readFile(imagePath);
+            const hash = createHash('md5').update(buffer).digest('hex');
+            if (image.path === 'images/' + hash + '.png') {
+              continue; // same as local file, skip downloading
+            }
+          }
+          console.log('download', image.url);
+          await download(image.url, imagePath);
           for (let s = 0; s < game.subs.length; s++) {
             const sub = game.subs[s];
             const target = './' + normalize(game.name) + '.png';
