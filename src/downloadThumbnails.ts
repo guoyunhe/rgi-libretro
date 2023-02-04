@@ -19,13 +19,15 @@ export interface Options {
 
 export async function downloadThumbnails(platform: string, { apiUrl = 'https://rgi-api.guoyunhe.me/' }: Options) {
   axios.defaults.baseURL = apiUrl;
+  const { data: platforms } = await axios.get<any[]>('/platforms');
+  const platformId = platforms.find((p) => p.code === platform).id;
   for (let i = 1; i < 999; i++) {
     const res = await axios.get('/games', {
       params: {
         page: i,
         perPage: 50,
-        platform,
-      }
+        platform: platformId,
+      },
     });
 
     const games = res.data.data;
