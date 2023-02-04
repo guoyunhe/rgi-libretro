@@ -1,6 +1,6 @@
 import { download } from '@guoyunhe/downloader';
 import axios from 'axios';
-import { symlink } from 'fs/promises';
+import { rm, symlink } from 'fs/promises';
 import { join } from 'path';
 
 const typesDict = {
@@ -43,7 +43,10 @@ export async function downloadThumbnails(platform: string, { apiUrl = 'https://r
           await download(image.url, join(folder, normalize(game.name) + '.png'));
           for (let s = 0; s < game.subs.length; s++) {
             const sub = game.subs[s];
-            await symlink('./' + normalize(game.name) + '.png', join(folder, normalize(sub.name) + '.png'));
+            const target = './' + normalize(game.name) + '.png';
+            const link = join(folder, normalize(sub.name) + '.png');
+            await rm(link, { force: true });
+            await symlink(target, link);
           }
         }
       }
