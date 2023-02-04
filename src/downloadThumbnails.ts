@@ -36,7 +36,6 @@ export async function downloadThumbnails(platform: string, { apiUrl = 'https://r
 
     for (let j = 0; j < games.length; j++) {
       const game = games[j];
-      console.log(game.images);
       for (let k = 0; k < 3; k++) {
         const [type, folder] = Object.entries(typesDict)[k];
         const image = game.images.find((img: any) => img.type === type);
